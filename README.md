@@ -73,8 +73,51 @@ where the submodule is added with:
 ```
 git submodule add <fparse_repo_url> external/fparse
 ```
-You will need to adjust your compilation scripts to ensure `fparse` is compiled
-and linked with your project, and that the module files are in the search path.
+You will need to adjust your build system to ensure `fparse` is compiled and
+linked with your project, and that the module files are in the search path.
+
+## CMake integration
+
+`fparse` now provides a native CMake target, so projects can consume it either
+as a checked-out submodule or via `FetchContent`.
+
+### Using a local checkout / submodule
+
+If your project contains `fparse` at `external/fparse`, a typical integration is:
+
+```cmake
+add_subdirectory(external/fparse)
+target_link_libraries(my_app PRIVATE fparse::fparse)
+```
+
+This lets CMake handle the build order and the Fortran module include path.
+
+### Using FetchContent
+
+If you want to fetch `fparse` automatically when it is missing:
+
+```cmake
+include(FetchContent)
+
+FetchContent_Declare(
+    fparse
+    GIT_REPOSITORY https://github.com/nantonio1/fparse.git
+    GIT_TAG <fixed-commit>
+)
+
+FetchContent_MakeAvailable(fparse)
+target_link_libraries(my_app PRIVATE fparse::fparse)
+```
+
+Using some fixed commit is recommended for reproducible builds.
+
+### Building the example
+
+By default the example program is built. To disable it:
+
+```bash
+cmake -S . -B build -DFPARSE_BUILD_EXAMPLES=OFF
+```
 
 ## How to use in your fortran project
 Below is a high-level overview of how to use `fparse` in your Fortran project:
