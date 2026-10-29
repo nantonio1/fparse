@@ -4,20 +4,10 @@
 format. I created it for my own projects and decided to share it in case others
 find it useful. 
 
-## Features
-
-- Block-based input files with `block` ... `end`
-- Case-insensitive blocks and keys
-- `#` comments
-- Line continuation with `\`
-- `@include` for splitting inputs across files
-- Schema-driven validation with defaults
-- Immediate stop on any invalid input or missing required item
-
-## Input file format
-The input format that `fparse` expects is simple and human-readable. It is 
-inspired by well-known formats like toml and yaml. However, ultimately I
-designed the format in a way I liked and thought would be easy to use.
+## Input file schema
+It is inspired by well-known formats/schemas like toml and yaml. However, 
+ultimately I designed the format in a way I liked and thought would be easy to 
+use.
 
 Below is an example of the format:
 
@@ -31,7 +21,8 @@ END
 
 @include other_input.in
 ```
-- Blocks are started by a line containing the block name.
+
+- Blocks are started by a line containing the block name (case-insensitive).
 - Blocks end with a line containing `end` (case-insensitive).
 - Keys are written as `[key] value` and are case-insensitive.
 - `#` starts a comment anywhere on a line.
@@ -51,7 +42,7 @@ Some recommended layout in your target project:
 ```
 my_project/
     src/
-    fparse/          # this repo as a submodule
+        fparse/          # this repo as a submodule
 ```
 
 add the submodule:
@@ -60,12 +51,12 @@ add the submodule:
 git submodule add <fparse_repo_url> src/fparse
 ```
 
-or it can be added at the top level:
+or it can be placed in an `external` directory:
 
 ```
 my_project/
     external/
-    fparse/          # this repo as a submodule
+        fparse/          # this repo as a submodule
 ```
 
 where the submodule is added with:
@@ -165,8 +156,8 @@ the example).
 
 ## Required vs optional keys and defaults
 You are able to specify whether a key is required or optional, and if optional,
-whether it has a default value. This is done when defining the schema with
-`add_key`. 
+whether it has a default value or not. This is done when defining the schema 
+with `add_key` subroutine.
 
 Each key derived type in the schema has three properties that control how
 missing input is handled:
@@ -186,7 +177,7 @@ In this example, `mode` is optional and defaults to `standard`, while `flags`
 is optional and has no default. if an optional key is missing and has no
 default, the getter can return a `found = .false.` flag.
 
-## Overview of main API functions
+## Overview of main subroutines
 
 - schema construction: `init_schema`, `add_block`, `add_key`
 - parsing: `parse_input`
